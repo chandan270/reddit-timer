@@ -1,0 +1,41 @@
+#sign{
+    margin-top: 3%;
+    margin-left: 50%;
+}
+body{
+    padding: 3%;
+    font-family: 'Montserrat', sans-serif;
+    color: #93918f;
+}
+button{
+    background: #FDB755;
+    border-radius: 4px;
+    text-align: center;
+    border: none;
+    color: #FFFFFF;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+}
+input{
+    border-radius: 2px;
+    border: 1px solid rgb(230, 230, 230);
+    background-color: rgb(255, 255, 255);
+    margin-right: 10px;
+    width: 336px;
+    height: 34px;
+    padding: 0px 17px;
+}
+h1{
+    font-family: 'Bitter', serif;
+    color: black;
+}
+#content{
+    width: 50%;
+    margin: 0 auto;
+}
+form{
+    margin-top: 5%;
+    margin-bottom: 15%;
+}
