@@ -1,322 +1,53 @@
 <!DOCTYPE html>
+
 <html>
+
   <head>
+
     <title>Reddit-timer</title>
-    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
-    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-heatmap.min.js"></script>
+
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@300&family=Montserrat&display=swap" rel="stylesheet">
+
     <link rel="icon" type="image/svg+xml" href="/css/white.svg">
+
     <link rel="stylesheet" href="/css/timer.css">
+
   </head>
+
   <body>
-    <!-- <div id="preload">
-      <img src="/css/loading.gif" alt="Loading" />
-      </div> -->
+    
       <img id="logo" src="/css/logo.svg">
+
       <a id="search" href="/">Search</a>
+
       <div id="preload" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+
       <div id="parent">
-      <div id="container"></div>
-    </div>
+        <div id="container"></div>
+      </div>
+
       <div id="content">
     
-    <p>The best time to post is:</p>
-    <div id="time"></div>
-    <div id="tables"></div>
-    <img id="sign" src="/css/sign.svg">
-  </div>
-    <script>
-      document.getElementById("content").style.display = "none";
-      var after;
-      var arr=[];
-      var arr1,arr2,arr3,arr4,arr5;
+        <p>The best time to post is:</p>
+        <div id="time"></div>
+        <div id="tables"></div>
+        <img id="sign" src="/css/sign.svg">
 
-      function collectData(x){
-          return {hour:new Date((x.data.created_utc)*1000).getHours(),
-                  day:new Date((x.data.created_utc)*1000).getDay(),
-                  title:x.data.title,
-                  link:"https://www.reddit.com"+x.data.permalink,
-                  score:x.data.score,
-                  comments:x.data.num_comments,
-                  author:x.data.author
-          }
-      }
-
-      var d=[];
-
-      for(var i=0;i<24;i++)
-      {
-          for(var j=0;j<7;j++)
-          {
-              if(j==0)
-              d.push({x:i,y:"Mon",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==1)
-              d.push({x:i,y:"Tue",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==2)
-              d.push({x:i,y:"Wed",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==3)
-              d.push({x:i,y:"Thu",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==4)
-              d.push({x:i,y:"Fri",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==5)
-              d.push({x:i,y:"Sat",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-              if(j==6)
-              d.push({x:i,y:"Sun",heat:0,title:[],link:[],score:[],comments:[],author:[]});
-          }
-      }
-      function dayToNum(day)
-      {
-          if(day=="Mon")
-          return 0;
-          if(day=="Tue")
-          return 1;
-          if(day=="Wed")
-          return 2;
-          if(day=="Thu")
-          return 3;
-          if(day=="Fri")
-          return 4;
-          if(day=="Sat")
-          return 5;
-          if(day=="Sun")
-          return 6;
-
-      }
-      function data(element){
-          
-          for(var i=0;i<168;i++)
-          {
-              if(d[i].x==element.hour&&dayToNum(d[i].y)==element.day)
-              {
-                  d[i].heat++;
-                  d[i].title.push(element.title);
-                  d[i].link.push(element.link);
-                  d[i].score.push(element.score);
-                  d[i].comments.push(element.comments);
-                  d[i].author.push(element.author);
-              }
-          }
-      }
+      </div>
 
 
-
-      axios.get('https://www.reddit.com/r/'+"<%=topic%>"+'/top/.json?limit=100&t=year').then(response => {
-
-        after=response.data.data.after;
-        arr1=response.data.data.children.map(collectData);
-        axios.get('https://www.reddit.com/r/'+"<%=topic%>"+'/top/.json?limit=100&t=year&after='+after).then(response => {
-        after=response.data.data.after;
-        arr2=response.data.data.children.map(collectData);
-        axios.get('https://www.reddit.com/r/'+"<%=topic%>"+'/top/.json?limit=100&t=year&after='+after).then(response => {
-        after=response.data.data.after;
-        arr3=response.data.data.children.map(collectData);
-        axios.get('https://www.reddit.com/r/'+"<%=topic%>"+'/top/.json?limit=100&t=year&after='+after).then(response => {
-        after=response.data.data.after;
-        arr4=response.data.data.children.map(collectData);
-        axios.get('https://www.reddit.com/r/'+"<%=topic%>"+'/top/.json?limit=100&t=year&after='+after).then(response => {
-        after=response.data.data.after;
-        arr5=response.data.data.children.map(collectData);
-        arr = arr.concat(arr1, arr2, arr3,arr4,arr5);
-
-        for(var i=0;i<arr.length;i++)
-        {
-          data(arr[i]);
-        }
-        for(var i=0;i<d.length;i++)
-        {
-          d[i].x=d[i].x+"h";
-        }
-        console.log(d);
-        var dataSet = anychart.data.set(d);
-
-        document.getElementById("content").style.display = "block";
-        document.getElementById("preload").style.display = "none";
-        anychart.onDocumentReady(function () {
-       
-       // create the chart and set the data
-       chart = anychart.heatMap(dataSet);
-       chart.stroke("0");
-       // set the chart title
-       var customColorScale = anychart.scales.linearColor();
-          customColorScale.colors(["#E0E5A3", "#5AAD8C"]);
-        
-        // set the color scale as the color scale of the chart
-        chart.colorScale(customColorScale);
-        var labels = chart.labels();
-        labels.fontColor('#ffffff');
-        labels.fontWeight(600);
-        labels.fontFamily('Montserrat');
-        var axis = chart.xAxis();
-        axis.labels().fontColor('#93918f');
-        axis.labels().fontFamily('Montserrat');
-        axis.labels().fontWeight('600');
-        var axis = chart.yAxis();
-        axis.labels().fontColor('#93918f');
-        axis.labels().fontFamily('Montserrat');
-        axis.labels().fontWeight('600');
-       
-       // create and configure the color scale.
-       
-       
-       // set the container id
-       chart.container("container");
-       
-       // initiate drawing the chart
-       chart.draw();
-       
-       chart.listen("pointClick", function(e){
-      var author = e.point.get("author");
-      var comments=e.point.get("comments");
-      var link=e.point.get("link");
-      var score=e.point.get("score");
-      var title=e.point.get("title");
+    
+      <p id="yy" style="display:none"><%= topic %></p>
       
-      var div = document.getElementById("tables");
-      div.innerHTML = "";
-      // create elements <table> and a <tbody>
-      var tbl = document.createElement("table");
-      var tblBody = document.createElement("tbody");
-      var row = document.createElement("tr");
-      var cell = document.createElement("th");
-      var cellText = document.createTextNode("Title");
+      <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+      <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-heatmap.min.js"></script>
 
-      cell.appendChild(cellText);
-      row.appendChild(cell);
-      var cell = document.createElement("th");
-      var cellText = document.createTextNode("Score");
-
-      cell.appendChild(cellText);
-      row.appendChild(cell);
-      var cell = document.createElement("th");
-      var cellText = document.createTextNode("Comments");
-
-      cell.appendChild(cellText);
-      row.appendChild(cell);
-      var cell = document.createElement("th");
-      var cellText = document.createTextNode("Author");
-
-      cell.appendChild(cellText);
-      row.appendChild(cell);
-      tblBody.appendChild(row);
-      // cells creation
-      for (var j = 0; j < author.length; j++) {
-        // table row creation
-        var row = document.createElement("tr");
-
- 
-          // create element <td> and text node 
-          //Make text node the contents of <td> element
-          // put <td> at end of the table row
-          var l = document.createElement('a');
-          l.setAttribute('href',link[j]);
-          l.setAttribute('target',"_blank");
-          if(title[j].length>=50)
-          var name=title[j].substring(0,50)+"...";
-          else
-          name=title[j];
-          var linkText = document.createTextNode(name);
-          l.appendChild(linkText);
-          var cell = document.createElement("td");
-          cell.appendChild(l);
-
-          row.appendChild(cell);
-
-          var cell = document.createElement("td");
-          var cellText = document.createTextNode(score[j]);
-
-          cell.appendChild(cellText);
-          row.appendChild(cell);
-
-          var cell = document.createElement("td");
-          var cellText = document.createTextNode(comments[j]);
-
-          cell.appendChild(cellText);
-          row.appendChild(cell);
-
-          // var cell = document.createElement("td");
-          // var cellText = document.createTextNode(author[j]);
-
-          // cell.appendChild(cellText);
-          // row.appendChild(cell);
-          var l = document.createElement('a');
-          l.setAttribute('href','https://www.reddit.com/user/'+author[j]+'/');
-          l.setAttribute('target',"_blank");
-          if(author[j].length>=11)
-          var name=author[j].substring(0,12)+"...";
-          else
-          name=author[j];
-          var linkText = document.createTextNode(name);
-          l.appendChild(linkText);
-          var cell = document.createElement("td");
-          cell.appendChild(l);
-
-          row.appendChild(cell);
-
-
-
-
-        //row added to end of table body
-        tblBody.appendChild(row);
-      }
-
-      // append the <tbody> inside the <table>
-      tbl.appendChild(tblBody);
-      // put <table> in the <body>
-      div.appendChild(tbl);
-
-      });
-
-     });
-
-     var max=0;
-     var maxdata=[];
-     for(var i=0;i<d.length;i++)
-     {
-       if(max<d[i].heat)
-       {
-         max=d[i].heat;
-         maxdata=[];
-       }
-       if(max==d[i].heat)
-       {
-         maxdata.push({x:d[i].x,y:d[i].y});
-       }
-     }
-     console.log(max);
-     
-     for(var i=0;i<maxdata.length;i++)
-     {
-       var para = document.createElement("P");
-       para.innerText = maxdata[i].x+" "+maxdata[i].y;
-       document.getElementById("time").appendChild(para);
-     }
-
-      })
-      .catch(err => {
-        console.log(err);
-      });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-      })
-      .catch(err => {
-        document.getElementsByTagName("body")[0].innerHTML="No such subreddit!";
-        console.log(err);
-      });
-      
-
-    </script>
+      <script type="module" src="/css/timer.js"></script>
+      <script type="module" src="/css/renderHeatmap.js"></script>
+      <script type="module" src="/css/popularPosts.js"></script>
   </body>
 </html>
