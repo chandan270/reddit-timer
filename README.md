@@ -21,7 +21,5 @@ With Reddit timer users can get the best time to post their content on a particu
 * Node js
 * Express js
 
-***I got the idea of this project from [Johannes Kettmann's](https://jkettmann.com) blog .***
-
 
 
